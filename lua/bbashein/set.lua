@@ -1,6 +1,7 @@
 local opt = vim.opt
 local g = vim.g
 
+g.airline_theme = "solarized"
 g.mapleader = " "
 g.netrw_browse_split = 0
 g.netrw_banner = 0

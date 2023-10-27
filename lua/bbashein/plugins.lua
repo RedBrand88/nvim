@@ -23,6 +23,8 @@ return require("packer").startup(function(use)
     })
 
     use { "folke/tokyonight.nvim" }
+    use { 'vim-airline/vim-airline' }
+    use { 'vim-airline/vim-airline-themes' }
 
     use {
         'VonHeikemen/lsp-zero.nvim',
