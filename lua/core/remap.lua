@@ -30,15 +30,15 @@ keymap.set("n", "n", "nzzzv")
 keymap.set("n", "N", "Nzzzv")
 
 -- next greatest remap ever : asbjornHaland
-keymap.set({"n", "v"}, "<leader>y", [["+y]])
+keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 keymap.set("n", "<leader>Y", [["+Y]])
 
-keymap.set({"n", "v"}, "<leader>d", [["_d]])
+keymap.set({ "n", "v" }, "<leader>d", [["_d]])
 
 keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
 
 keymap.set("n", "<leader>vpp", "<cmd>e ~/.config/nvim/lua/bbashein/plugins.lua<CR>");
 
 keymap.set("n", "<leader><leader>", function()
-    vim.cmd("so")
+  vim.cmd("so")
 end)
