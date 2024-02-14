@@ -10,7 +10,7 @@ return {
     "L3MON4D3/LuaSnip",
   },
   config = function()
-    local lsp_zero = require('lsp-zero')
+    local lsp = require('lsp-zero')
     local cmp = require('cmp')
     local cmp_nvim_lsp = require('cmp_nvim_lsp')
     local capabilities = vim.tbl_deep_extend(
@@ -21,14 +21,29 @@ return {
     )
 
     ---@diagnostic disable-next-line: unused-local
-    lsp_zero.on_attach(function(client, bufnr)
+    lsp.on_attach(function(client, bufnr)
       -- see :help lsp-zero-keybindings
       -- to learn the available actions
-      lsp_zero.default_keymaps({ buffer = bufnr })
+      lsp.default_keymaps({ buffer = bufnr })
 
       vim.keymap.set('n', '<leader>vf', '<cmd>lua vim.lsp.buf.format()<CR>', { buffer = bufnr });
       vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, { buffer = bufnr });
     end)
+
+    lsp.format_on_save({
+      format_opts = {
+        async = false,
+        timeout_ms = 10000,
+      },
+      servers = {
+        ['tsserver'] = { 'javascript', 'typescript', 'typescriptreact', 'javascriptreact' },
+        ['lua_ls'] = { 'lua' },
+        -- ['gopls'] = { 'Go' },
+        -- ['jdtls'] = { 'java' },
+        ['jsonls'] = { 'JSON' },
+        ['cssls'] = { 'css' },
+      }
+    })
 
     require('mason').setup({})
     require('mason-lspconfig').setup({
