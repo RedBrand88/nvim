@@ -14,6 +14,6 @@ return {
 
             ColorMyTheme()
         end
-    },  
+    },
 }
 
