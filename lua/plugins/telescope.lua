@@ -12,22 +12,23 @@ return {
       end,
     },
   },
-  opt = {
-    defaults = {
-      file_ignore_patterns = {
-        "node_modules/.*",
-        "%.env",
-        "yarn.lock",
-        "package-lock.json",
-        "lazy-lock.json",
-        "init.sql",
-        "target/.*",
-        ".git/.*",
-      },
-    },
-  },
   config = function()
-    require('telescope').setup({})
+    require('telescope').setup({
+      opt = {
+        defaults = {
+          file_ignore_patterns = {
+            "node_modules/.*",
+            "%.env",
+            "yarn.lock",
+            "package-lock.json",
+            "lazy-lock.json",
+            "init.sql",
+            "target/.*",
+            ".git/.*",
+          },
+        },
+      },
+    })
 
     local builtin = require('telescope.builtin')
     vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
