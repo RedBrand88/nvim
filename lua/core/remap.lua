@@ -16,7 +16,7 @@ keymap.set("n", "<leader>k", "<C-w>k")
 keymap.set("n", "<leader>l", "<C-w>l")
 
 keymap.set("n", "<leader>nx", vim.cmd.close)
-keymap.set("n", "<leader>xa", "<C-w>o")
+keymap.set("n", "<leader>wo", "<C-w>o")
 
 keymap.set("i", "jj", "<Esc>")
 
@@ -42,3 +42,5 @@ keymap.set("n", "<leader>vpp", "<cmd>e ~/.config/nvim/lua/bbashein/plugins.lua<C
 keymap.set("n", "<leader><leader>", function()
   vim.cmd("so")
 end)
+
+keymap.set("i", "<leader>cp", 'copilot#Accept("<CR>")', {silent = true, expr = true})

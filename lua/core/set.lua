@@ -5,6 +5,7 @@ g.mapleader = " "
 g.netrw_browse_split = 0
 g.netrw_banner = 0
 g.netrw_winsize = 25
+g.copilot_no_tab_map = true
 opt.nu = true
 opt.relativenumber = true
 

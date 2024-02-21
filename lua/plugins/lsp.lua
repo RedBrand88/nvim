@@ -30,20 +30,20 @@ return {
       vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, { buffer = bufnr });
     end)
 
-    lsp.format_on_save({
-      format_opts = {
-        async = false,
-        timeout_ms = 10000,
-      },
-      servers = {
-        ['tsserver'] = { 'javascript', 'typescript', 'typescriptreact', 'javascriptreact' },
-        ['lua_ls'] = { 'lua' },
-        -- ['gopls'] = { 'Go' },
-        -- ['jdtls'] = { 'java' },
-        ['jsonls'] = { 'JSON' },
-        ['cssls'] = { 'css' },
-      }
-    })
+    -- lsp.format_on_save({
+    --   format_opts = {
+    --     async = false,
+    --     timeout_ms = 10000,
+    --   },
+    --   servers = {
+    --     ['tsserver'] = { 'javascript', 'typescript', 'typescriptreact', 'javascriptreact' },
+    --     ['lua_ls'] = { 'lua' },
+    --     -- ['gopls'] = { 'Go' },
+    --     -- ['jdtls'] = { 'java' },
+    --     ['jsonls'] = { 'JSON' },
+    --     ['cssls'] = { 'css' },
+    --   }
+    -- })
 
     require('mason').setup({})
     require('mason-lspconfig').setup({
