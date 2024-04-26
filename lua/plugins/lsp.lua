@@ -55,6 +55,17 @@ return {
           }
         end,
 
+        ["tsserver"] = function()
+          local lspconfig = require("lspconfig")
+          lspconfig.tsserver.setup({
+            capabilities = capabilities,
+            root_dir = function(fname)
+              return require 'lspconfig'.util.root_pattern('package.json', 'tsconfig.json', '.git')(fname) or
+              vim.loop.cwd()
+            end
+          })
+        end,
+
         ["lua_ls"] = function()
           local lspconfig = require("lspconfig")
           lspconfig.lua_ls.setup {
