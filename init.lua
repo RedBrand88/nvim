@@ -18,3 +18,4 @@ require('lazy').setup("plugins")
 
 require('core.set')
 require('core.remap')
+require('core.line_numbers')

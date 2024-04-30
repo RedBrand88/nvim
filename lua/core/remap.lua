@@ -1,5 +1,6 @@
 local keymap = vim.keymap
 local api = vim.api
+local line_numbers = require("core.line_numbers")
 
 keymap.set("n", "<leader>e", vim.cmd.Ex)
 
@@ -44,4 +45,7 @@ keymap.set("n", "<leader><leader>", function()
   vim.cmd("so")
 end)
 
-api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', {silent = true, expr = true})
+api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+
+api.nvim_set_keymap("n", "<leader>l", "<cmd>lua require('core.line_numbers').toggle_line_numbers()<CR>",
+  { noremap = true, silent = true })
