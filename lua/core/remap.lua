@@ -48,5 +48,5 @@ end)
 api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 -- required for pair programming or for when your manager is looking at your code
-api.nvim_set_keymap("n", "<leader>ln", "<cmd>lua require('core.line_numbers').toggle_line_numbers()<CR>",
+api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('core.line_numbers').toggle_line_numbers()<CR>",
   { noremap = true, silent = true })
