@@ -28,6 +28,7 @@ return {
 
       vim.keymap.set('n', '<leader>vf', '<cmd>lua vim.lsp.buf.format()<CR>', { buffer = bufnr });
       vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, { buffer = bufnr });
+      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr });
     end)
 
     -- lsp.format_on_save({
@@ -56,7 +57,11 @@ return {
         end,
 
         ["tsserver"] = function()
-          local lspconfig = require("lspconfig")
+          local success, lspconfig = pcall(require, "lspconfig")
+          if not success then
+            vim.notify("lspconfig is not installed", vim.log.levels.ERROR)
+            return
+          end
           lspconfig.tsserver.setup({
             capabilities = capabilities,
             root_dir = function(fname)
