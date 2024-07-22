@@ -12,12 +12,15 @@ return {
       }
     })
 
-    vim.keymap.set("n", "<leader>a", function() harpoon:list():append() end)
+    vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
     vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
 
     vim.keymap.set("n", "<leader>pu", function() harpoon:list():select(1) end)
     vim.keymap.set("n", "<leader>pi", function() harpoon:list():select(2) end)
     vim.keymap.set("n", "<leader>po", function() harpoon:list():select(3) end)
     vim.keymap.set("n", "<leader>pp", function() harpoon:list():select(4) end)
+
+    vim.keymap.set("n", "<leader>sh", function() harpoon:list():prev() end)
+    vim.keymap.set("n", "<leader>sl", function() harpoon:list():next() end)
   end
 }
