@@ -50,3 +50,6 @@ api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', { silent = true, exp
 -- required for pair programming or for when your manager is looking at your code
 api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('core.line_numbers').toggle_line_numbers()<CR>",
   { noremap = true, silent = true })
+
+api.nvim_set_keymap("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", { noremap = true, silent = true })
+api.nvim_set_keymap("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", { noremap = true, silent = true })
