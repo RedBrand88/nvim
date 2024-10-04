@@ -48,7 +48,7 @@ return {
 
     require('mason').setup({})
     require('mason-lspconfig').setup({
-      ensure_installed = { 'tsserver', 'lua_ls', 'cssls' },
+      ensure_installed = { 'ts_ls', 'lua_ls', 'cssls' },
       handlers = {
         function(server_name)
           require("lspconfig")[server_name].setup {
@@ -56,13 +56,13 @@ return {
           }
         end,
 
-        ["tsserver"] = function()
+        ["ts_ls"] = function()
           local success, lspconfig = pcall(require, "lspconfig")
           if not success then
             vim.notify("lspconfig is not installed", vim.log.levels.ERROR)
             return
           end
-          lspconfig.tsserver.setup({
+          lspconfig.ts_ls.setup({
             capabilities = capabilities,
             root_dir = function(fname)
               return require 'lspconfig'.util.root_pattern('package.json', 'tsconfig.json', '.git')(fname) or
