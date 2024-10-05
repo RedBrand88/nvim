@@ -1,6 +1,5 @@
 local keymap = vim.keymap
 local api = vim.api
-local line_numbers = require("core.line_numbers")
 
 keymap.set("n", "<leader>e", vim.cmd.Ex)
 
