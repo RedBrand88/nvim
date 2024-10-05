@@ -48,7 +48,7 @@ return {
 
     require('mason').setup({})
     require('mason-lspconfig').setup({
-      ensure_installed = { 'ts_ls', 'lua_ls', 'cssls' },
+      ensure_installed = { 'ts_ls', 'lua_ls', 'cssls', 'gopls' },
       handlers = {
         function(server_name)
           require("lspconfig")[server_name].setup {
@@ -82,6 +82,30 @@ return {
                 }
               }
             }
+          }
+        end,
+
+        ["gopls"] = function()
+          local lspconfig = require("lspconfig")
+          lspconfig.gopls.setup {
+            capabilities = capabilities,
+            settings = {
+              gopls = {
+                analyses = {
+                  unusedparams = true,
+                },
+                staticcheck = true,
+              },
+            },
+            on_attach = function(client, bufnr)
+              lsp.default_keymaps({ buffer = bufnr })
+              vim.cmd([[
+                augroup GoFormat
+                  autocmd!
+                  autocmd BufWritePre *.go :silent! lua vim.lsp.buf.formatting_sync()
+                augroup END
+              ]])
+            end
           }
         end,
       }
