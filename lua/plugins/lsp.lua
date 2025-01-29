@@ -31,21 +31,6 @@ return {
       vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr });
     end)
 
-    -- lsp.format_on_save({
-    --   format_opts = {
-    --     async = false,
-    --     timeout_ms = 10000,
-    --   },
-    --   servers = {
-    --     ['tsserver'] = { 'javascript', 'typescript', 'typescriptreact', 'javascriptreact' },
-    --     ['lua_ls'] = { 'lua' },
-    --     -- ['gopls'] = { 'Go' },
-    --     -- ['jdtls'] = { 'java' },
-    --     ['jsonls'] = { 'JSON' },
-    --     ['cssls'] = { 'css' },
-    --   }
-    -- })
-
     require('mason').setup({})
     require('mason-lspconfig').setup({
       ensure_installed = { 'ts_ls', 'lua_ls', 'cssls', 'gopls' },
@@ -66,7 +51,7 @@ return {
             capabilities = capabilities,
             root_dir = function(fname)
               return require 'lspconfig'.util.root_pattern('package.json', 'tsconfig.json', '.git')(fname) or
-              vim.loop.cwd()
+                  vim.loop.cwd()
             end
           })
         end,
@@ -77,6 +62,10 @@ return {
             capabilities = capabilities,
             settings = {
               Lua = {
+                runtime = {
+                  version = 'LuaJIT',
+                  path = vim.split(package.path, ';'),
+                },
                 diagnostics = {
                   globals = { "vim", "it", "describe", "before_each", "after_each" },
                 }
