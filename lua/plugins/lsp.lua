@@ -1,144 +1,114 @@
 return {
-  "VonHeikemen/lsp-zero.nvim",
-  branch = "v3.x",
-  dependencies = {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
-    "hrsh7th/cmp-nvim-lsp",
-    "hrsh7th/nvim-cmp",
-    "L3MON4D3/LuaSnip",
+  {
+    'williamboman/mason.nvim',
+    lazy = false,
+    opts = {},
   },
-  config = function()
-    local lsp = require('lsp-zero')
-    local cmp = require('cmp')
-    local cmp_nvim_lsp = require('cmp_nvim_lsp')
-    local capabilities = vim.tbl_deep_extend(
-      "force",
-      {},
-      vim.lsp.protocol.make_client_capabilities(),
-      cmp_nvim_lsp.default_capabilities()
-    )
 
-    ---@diagnostic disable-next-line: unused-local
-    lsp.on_attach(function(client, bufnr)
-      -- see :help lsp-zero-keybindings
-      -- to learn the available actions
-      lsp.default_keymaps({ buffer = bufnr })
+  -- Autocompletion
+  {
+    'hrsh7th/nvim-cmp',
+    event = 'InsertEnter',
+    config = function()
+      local cmp = require('cmp')
 
-      vim.keymap.set('n', '<leader>vf', '<cmd>lua vim.lsp.buf.format()<CR>', { buffer = bufnr });
-      vim.keymap.set({ 'n', 'v' }, '<space>ca', vim.lsp.buf.code_action, { buffer = bufnr });
-      vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = bufnr });
-    end)
-
-    require('mason').setup({})
-    require('mason-lspconfig').setup({
-      ensure_installed = { 'ts_ls', 'lua_ls', 'cssls', 'gopls' },
-      handlers = {
-        function(server_name)
-          require("lspconfig")[server_name].setup {
-            capabilities = capabilities
-          }
-        end,
-
-        ["ts_ls"] = function()
-          local success, lspconfig = pcall(require, "lspconfig")
-          if not success then
-            vim.notify("lspconfig is not installed", vim.log.levels.ERROR)
-            return
-          end
-          lspconfig.ts_ls.setup({
-            capabilities = capabilities,
-            root_dir = function(fname)
-              return require 'lspconfig'.util.root_pattern('package.json', 'tsconfig.json', '.git')(fname) or
-                  vim.loop.cwd()
-            end
-          })
-        end,
-
-        ["lua_ls"] = function()
-          local lspconfig = require("lspconfig")
-          lspconfig.lua_ls.setup {
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                runtime = {
-                  version = 'LuaJIT',
-                  path = vim.split(package.path, ';'),
-                },
-                diagnostics = {
-                  globals = { "vim", "it", "describe", "before_each", "after_each" },
-                }
-              }
-            }
-          }
-        end,
-
-        ["gopls"] = function()
-          local lspconfig = require("lspconfig")
-          lspconfig.gopls.setup {
-            capabilities = capabilities,
-            settings = {
-              gopls = {
-                analyses = {
-                  unusedparams = true,
-                },
-                staticcheck = true,
-              },
-            },
-            on_attach = function(client, bufnr)
-              lsp.default_keymaps({ buffer = bufnr })
-              vim.cmd([[
-                augroup GoFormat
-                  autocmd!
-                  autocmd BufWritePre *.go :silent! lua vim.lsp.buf.formatting_sync()
-                augroup END
-              ]])
-            end
-          }
-        end,
-      }
-    })
-
-    local cmp_select = { behavior = cmp.SelectBehavior.Select }
-
-    cmp.setup({
-      snippet = {
-        expand = function(args)
-          require('luasnip').lsp_expand(args.body)
-        end,
-      },
-      window = {
-        completion = cmp.config.window.bordered({
-          border = 'rounded',
+      cmp.setup({
+        sources = {
+          {name = 'nvim_lsp'},
+        },
+        mapping = cmp.mapping.preset.insert({
+          ['<return>'] = cmp.mapping.confirm({
+            behavior = cmp.ConfirmBehavior.Insert,
+            select = true,
+          }),
+          ['<C-Space>'] = cmp.mapping.complete(),
+          ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-d>'] = cmp.mapping.scroll_docs(4),
         }),
-        documentation = cmp.config.window.bordered({
-          border = 'rounded',
-        }),
-      },
-      mapping = cmp.mapping.preset.insert({
-        ['<S-Tab>'] = cmp.mapping.select_prev_item(cmp_select),
-        ['<Tab>'] = cmp.mapping.select_next_item(cmp_select),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
-        ["<C-Space>"] = cmp.mapping.complete(),
-      }),
-      sources = cmp.config.sources({
-        { name = 'nvim_lsp' },
-        { name = 'luasnip' }, -- For luasnip users.
-      }, {
-        { name = 'buffer' },
+        snippet = {
+          expand = function(args)
+            vim.snippet.expand(args.body)
+          end,
+        },
       })
-    })
+    end
+  },
 
-    vim.diagnostic.config({
-      float = {
-        focusable = true,
-        style = "minimal",
-        border = "rounded",
-        source = "always",
-        header = "",
-        prefix = "",
-      },
-    })
-  end
+  -- LSP
+  {
+    'neovim/nvim-lspconfig',
+    cmd = {'LspInfo', 'LspInstall', 'LspStart'},
+    event = {'BufReadPre', 'BufNewFile'},
+    dependencies = {
+      {'hrsh7th/cmp-nvim-lsp'},
+      {'williamboman/mason.nvim'},
+      {'williamboman/mason-lspconfig.nvim'},
+    },
+    init = function()
+      vim.opt.signcolumn = 'yes'
+    end,
+    config = function()
+      local lsp_defaults = require('lspconfig').util.default_config
+
+      -- This should be executed before you configure any language server
+      lsp_defaults.capabilities = vim.tbl_deep_extend(
+        'force',
+        lsp_defaults.capabilities,
+        require('cmp_nvim_lsp').default_capabilities()
+      )
+
+      -- LspAttach is where you enable features that only work
+      -- if there is a language server active in the file
+      vim.api.nvim_create_autocmd('LspAttach', {
+        desc = 'LSP actions',
+        callback = function(event)
+          local opts = {buffer = event.buf}
+
+          vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+          vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+          vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+          vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+          vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+          vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+          vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+          vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+          vim.keymap.set({'n', 'x'}, '<leader>vf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+          vim.keymap.set('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+        end,
+      })
+
+      -- configure dartls manually
+      require('lspconfig').dartls.setup({
+        cmd = { 'dart', 'language-server', '--protocol=lsp' },
+        filetypes = { 'dart' },
+        init_options = {
+          closingLabels = true,
+          flutterOutline = true,
+          onlyAnalyzeProjectsWithOpenFiles = true,
+          outline = true,
+          suggestFromUnimportedLibraries = true,
+        },
+        root_dir = require('lspconfig.util').root_pattern("pubspec.yaml", "analysis_options.yaml"),
+        settings = {
+          dart = {
+            completeFunctionCalls = true,
+            showTodos = true,
+          },
+        },
+        capabilities = lsp_defaults.capabilities,
+        on_attach = function(client, bufnr)
+          print('Dart language server started')
+        end,
+      })
+
+      require('mason-lspconfig').setup({
+        ensure_installed = {},
+        handlers = {
+          function(server_name)
+            require('lspconfig')[server_name].setup({})
+          end,
+        }
+      })
+    end
+  }
 }
