@@ -107,6 +107,20 @@ return {
           function(server_name)
             require('lspconfig')[server_name].setup({})
           end,
+
+          ['eslint'] = function()
+            require('lspconfig').eslint.setup({
+              root_dir = require('lspconfig.util').root_pattern(
+                'eslint.config.mjs',
+                'package.json'
+              ),
+              settings = {
+                eslint = {
+                  workingDirectories = { mode = 'auto'}
+                }
+              }
+            })
+          end,
         }
       })
     end

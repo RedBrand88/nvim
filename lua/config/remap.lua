@@ -44,7 +44,7 @@ keymap.set("n", "<leader><leader>", function()
   vim.cmd("so")
 end)
 
-api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+-- api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 -- required for pair programming or for when your manager is looking at your code
 api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('core.line_numbers').toggle_line_numbers()<CR>",

@@ -11,5 +11,4 @@ return {
     dependencies = { "mfussenegger/nvim-dap" }
   },
   "mfussenegger/nvim-jdtls",
-  "github/copilot.vim",
 }
