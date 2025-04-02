@@ -17,6 +17,7 @@ keymap.set("n", "<leader>k", "<C-w>k")
 keymap.set("n", "<leader>l", "<C-w>l")
 
 keymap.set("n", "<leader>nx", vim.cmd.close)
+keymap.set("n", "<leader>cx", ":cclose<CR>", {desc = "Close quick fix window"})
 keymap.set("n", "<leader>wo", "<C-w>o")
 
 keymap.set("i", "jj", "<Esc>")
