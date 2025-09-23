@@ -83,8 +83,21 @@ return {
 
       local function find_root(patterns)
         return function(fname)
-          local util = vim.fs
-          return util.find(patterns, { path = fname, upward = true })[1]
+          local filepath
+          if type(fname) == "string" then
+            filepath = fname
+          elseif type(fname) == "number" then
+            filepath = vim.api.nvim_buf_get_name(fname)
+          else
+            filepath = vim.api.nvim_buf_get_name(0)
+          end
+
+          if filepath == "" or filepath == nil then
+            filepath = vim.fn.getcwd()
+          end
+
+          local found = vim.fs.find(patterns, { path = filepath, upward = true })
+          return found[1] and vim.fs.dirname(found[1]) or vim.fn.getcwd()
         end
       end
 
