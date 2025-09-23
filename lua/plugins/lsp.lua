@@ -4,17 +4,14 @@ return {
     lazy = false,
     opts = {},
   },
-
-  -- Autocompletion
   {
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
     config = function()
       local cmp = require('cmp')
-
       cmp.setup({
         sources = {
-          {name = 'nvim_lsp'},
+          { name = 'nvim_lsp' },
         },
         mapping = cmp.mapping.preset.insert({
           ['<return>'] = cmp.mapping.confirm({
@@ -30,57 +27,71 @@ return {
             vim.snippet.expand(args.body)
           end,
         },
+        -- add border to completion menu
+        window = {
+          completion = cmp.config.window.bordered(),
+          documentation = cmp.config.window.bordered(),
+        },
       })
     end
   },
-
-  -- LSP
   {
     'neovim/nvim-lspconfig',
-    cmd = {'LspInfo', 'LspInstall', 'LspStart'},
-    event = {'BufReadPre', 'BufNewFile'},
+    cmd = { 'LspInfo', 'LspInstall', 'LspStart' },
+    event = { 'BufReadPre', 'BufNewFile' },
     dependencies = {
-      {'hrsh7th/cmp-nvim-lsp'},
-      {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
+      { 'hrsh7th/cmp-nvim-lsp' },
+      { 'williamboman/mason.nvim' },
+      { 'williamboman/mason-lspconfig.nvim' },
     },
     init = function()
       vim.opt.signcolumn = 'yes'
     end,
     config = function()
-      local lsp_defaults = require('lspconfig').util.default_config
+      local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+      function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+        opts = opts or {}
+        opts.border = opts.border or 'rounded'
+        return orig_util_open_floating_preview(contents, syntax, opts, ...)
+      end
 
-      -- This should be executed before you configure any language server
-      lsp_defaults.capabilities = vim.tbl_deep_extend(
+      local default_capabilities = vim.lsp.protocol.make_client_capabilities()
+      local capabilities = vim.tbl_deep_extend(
         'force',
-        lsp_defaults.capabilities,
+        default_capabilities,
         require('cmp_nvim_lsp').default_capabilities()
       )
 
-      -- LspAttach is where you enable features that only work
-      -- if there is a language server active in the file
       vim.api.nvim_create_autocmd('LspAttach', {
         desc = 'LSP actions',
         callback = function(event)
-          local opts = {buffer = event.buf}
-
-          vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-          vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
-          vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-          vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-          vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-          vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-          vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-          vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-          vim.keymap.set({'n', 'x'}, '<leader>vf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-          vim.keymap.set('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+          local function map(mode, lhs, rhs, desc)
+            vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = desc, noremap = true, silent = true })
+          end
+          map('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', 'Show hover docs')
+          map('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', 'Go to definition')
+          map('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', 'Go to declaration')
+          map('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', 'Go to implementation')
+          map('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', 'Go to type definition')
+          map('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', 'List references')
+          map('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', 'Show signature help')
+          map('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', 'Rename symbol')
+          map({ 'n', 'x' }, '<leader>vf', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', 'Format buffer')
+          map('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<cr>', 'Code action')
         end,
       })
 
-      -- configure dartls manually
-      require('lspconfig').dartls.setup({
+      local function find_root(patterns)
+        return function(fname)
+          local util = vim.fs
+          return util.find(patterns, { path = fname, upward = true })[1]
+        end
+      end
+
+      vim.lsp.config.dartls = {
         cmd = { 'dart', 'language-server', '--protocol=lsp' },
         filetypes = { 'dart' },
+        root_dir = find_root({ "pubspec.yaml", "analysis_options.yaml" }),
         init_options = {
           closingLabels = true,
           flutterOutline = true,
@@ -88,37 +99,43 @@ return {
           outline = true,
           suggestFromUnimportedLibraries = true,
         },
-        root_dir = require('lspconfig.util').root_pattern("pubspec.yaml", "analysis_options.yaml"),
         settings = {
           dart = {
             completeFunctionCalls = true,
             showTodos = true,
           },
         },
-        capabilities = lsp_defaults.capabilities,
+        capabilities = capabilities,
         on_attach = function(client, bufnr)
           print('Dart language server started')
         end,
-      })
+      }
+
+      vim.lsp.config.eslint = {
+        root_dir = find_root({ 'eslint.config.mjs', 'package.json' }),
+        settings = {
+          eslint = {
+            workingDirectories = { mode = 'auto' }
+          }
+        },
+        capabilities = capabilities,
+      }
 
       require('mason-lspconfig').setup({
         ensure_installed = {},
         handlers = {
           function(server_name)
-            require('lspconfig')[server_name].setup({})
-          end,
-
-          ['eslint'] = function()
-            require('lspconfig').eslint.setup({
-              root_dir = require('lspconfig.util').root_pattern(
-                'eslint.config.mjs',
-                'package.json'
-              ),
-              settings = {
-                eslint = {
-                  workingDirectories = { mode = 'auto'}
-                }
-              }
+            -- Skip servers manually configured above
+            if server_name == 'dartls' or server_name == 'eslint' then
+              return
+            end
+            -- For other servers, use the new API with default config
+            if not vim.lsp.config[server_name] then
+              vim.lsp.config[server_name] = {}
+            end
+            -- Merge with capabilities
+            vim.lsp.config[server_name] = vim.tbl_deep_extend('force', vim.lsp.config[server_name], {
+              capabilities = capabilities,
             })
           end,
         }

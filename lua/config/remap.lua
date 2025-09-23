@@ -48,7 +48,7 @@ end)
 -- api.nvim_set_keymap("i", "<C-o>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 -- required for pair programming or for when your manager is looking at your code
-api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('core.line_numbers').toggle_line_numbers()<CR>",
+api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('config.line_numbers').toggle_line_numbers()<CR>",
   { noremap = true, silent = true })
 
 api.nvim_set_keymap("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", { noremap = true, silent = true })
@@ -56,3 +56,4 @@ api.nvim_set_keymap("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", { nore
 
 vim.api.nvim_set_keymap("n", "<leader>ng", "<cmd>lua require('core.live_grep_file_filter').live_grep_file_filter()<CR>",
   { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>cs", require("config.cheatsheet").open, { desc = "Show keymap cheatsheet" })
