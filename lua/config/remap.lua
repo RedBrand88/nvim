@@ -54,6 +54,6 @@ api.nvim_set_keymap("n", "<leader>r", "<cmd>lua require('config.line_numbers').t
 api.nvim_set_keymap("n", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", { noremap = true, silent = true })
 api.nvim_set_keymap("n", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap("n", "<leader>ng", "<cmd>lua require('core.live_grep_file_filter').live_grep_file_filter()<CR>",
+vim.api.nvim_set_keymap("n", "<leader>ng", "<cmd>lua require('config.live_grep_file_filter').live_grep_file_filter()<CR>",
   { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>cs", require("config.cheatsheet").open, { desc = "Show keymap cheatsheet" })
